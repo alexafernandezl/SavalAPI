@@ -28,10 +28,11 @@ namespace SavalAPI.Models
 
         [Required]
         [Column(TypeName = "decimal(5,2)")]
-        public decimal Peso { get; set; } // En kilogramos
+        public decimal Peso { get; set; } // Se calculará automáticamente antes de guardar
 
-        [NotMapped] // No se almacena en la base de datos, se calcula dinámicamente
-        public decimal IMC => Peso / (Altura * Altura); // Cálculo del Índice de Masa Corporal
+        [Required]
+        [Column(TypeName = "decimal(5,2)")]
+        public decimal IMC { get; set; } // Se calculará automáticamente antes de guardar
 
         [Required]
         [MaxLength(50)]
@@ -39,9 +40,5 @@ namespace SavalAPI.Models
 
         [MaxLength(255)]
         public string? Ubicacion { get; set; } // Provincia, cantón, distrito (opcional)
-
-        public int? IdUsuario { get; set; } // Relación con usuario
-        [ForeignKey("IdUsuario")]
-        public Usuario? Usuario { get; set; } // Relación con el usuario
     }
 }

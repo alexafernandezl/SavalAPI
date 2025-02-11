@@ -143,11 +143,7 @@ namespace SavalAPI.Data
             modelBuilder.Entity<Encuestado>()
         .HasKey(e => e.Identificacion); // PK de la tabla
 
-            modelBuilder.Entity<Encuestado>()
-                .HasOne(e => e.Usuario)
-                .WithMany()
-                .HasForeignKey(e => e.IdUsuario)
-                .OnDelete(DeleteBehavior.SetNull);
+            
         }
 
     }
