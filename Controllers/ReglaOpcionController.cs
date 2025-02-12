@@ -27,9 +27,9 @@ namespace SavalAPI.Controllers
             try
             {
                 return await _context.ReglasOpciones
-                    .Include(ro => ro.Opcion)
-                    .Include(ro => ro.Recomendacion)
-                    .Include(ro => ro.FactorRiesgo)
+                   // .Include(ro => ro.Opcion)
+                   // .Include(ro => ro.Recomendacion)
+                  //  .Include(ro => ro.FactorRiesgo)
                     .ToListAsync();
             }
             catch (Exception ex)
@@ -61,6 +61,31 @@ namespace SavalAPI.Controllers
             }
         }
 
+
+        [HttpGet("opcion/{idOpcion}/recomendaciones")]
+        public async Task<ActionResult<IEnumerable<Recomendacion>>> GetRecomendacionesPorOpcion(int idOpcion)
+        {
+            try
+            {
+                // Obtener todas las recomendaciones asociadas a la opción de respuesta
+                var recomendaciones = await _context.ReglasOpciones
+                    .Where(ro => ro.IdOpcion == idOpcion && ro.IdRecomendacion != null)
+                    .Select(ro => ro.Recomendacion)
+                    .ToListAsync();
+
+                if (!recomendaciones.Any())
+                {
+                    return NotFound(new { message = "No hay recomendaciones asociadas a esta opción." });
+                }
+
+                return Ok(recomendaciones);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Error interno del servidor: {ex.Message}" });
+            }
+        }
+
         // CREAR UNA NUEVA REGLA OPCIÓN
         [HttpPost]
         public async Task<ActionResult<ReglaOpcion>> PostReglaOpcion(ReglaOpcion reglaOpcion)
@@ -72,7 +97,7 @@ namespace SavalAPI.Controllers
                 if (opcionExistente == null)
                     return BadRequest(new { message = "La opción de respuesta especificada no existe." });
 
-                // Validar que la recomendación o factor de riesgo existan (si se especifican)
+                // Validar si se envió IdRecomendacion y que la recomendación exista
                 if (reglaOpcion.IdRecomendacion.HasValue)
                 {
                     var recomendacionExistente = await _context.Recomendaciones.FindAsync(reglaOpcion.IdRecomendacion);
@@ -80,6 +105,7 @@ namespace SavalAPI.Controllers
                         return BadRequest(new { message = "La recomendación especificada no existe." });
                 }
 
+                // Validar si se envió IdFactorRiesgo y que el factor de riesgo exista
                 if (reglaOpcion.IdFactorRiesgo.HasValue)
                 {
                     var factorRiesgoExistente = await _context.FactoresRiesgo.FindAsync(reglaOpcion.IdFactorRiesgo);
@@ -87,16 +113,28 @@ namespace SavalAPI.Controllers
                         return BadRequest(new { message = "El factor de riesgo especificado no existe." });
                 }
 
+                // Agregar la regla a la base de datos
                 _context.ReglasOpciones.Add(reglaOpcion);
                 await _context.SaveChangesAsync();
 
-                return CreatedAtAction(nameof(GetReglaOpcion), new { id = reglaOpcion.IdRegla }, reglaOpcion);
+                // Responder solo con los datos esenciales
+                var response = new
+                {
+                    idRegla = reglaOpcion.IdRegla,
+                    idOpcion = reglaOpcion.IdOpcion,
+                    idRecomendacion = reglaOpcion.IdRecomendacion,
+                    idFactorRiesgo = reglaOpcion.IdFactorRiesgo,
+                    condicion = reglaOpcion.Condicion
+                };
+
+                return CreatedAtAction(nameof(GetReglaOpcion), new { id = reglaOpcion.IdRegla }, response);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = $"Error interno del servidor: {ex.Message}" });
             }
         }
+
 
         // ACTUALIZAR UNA REGLA OPCIÓN
         [HttpPut("{id}")]

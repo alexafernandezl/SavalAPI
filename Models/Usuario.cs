@@ -18,5 +18,5 @@ public class Usuario
 
     
     [JsonIgnore]
-    public Rol Rol { get; set; } // Relación obligatoria con el rol
+    public Rol? Rol { get; set; } // Relación obligatoria con el rol
 }
