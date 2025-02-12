@@ -61,18 +61,22 @@ namespace SavalAPI.Controllers
 
         // Crear una nueva pregunta
         [HttpPost]
-        public async Task<ActionResult<Pregunta>> PostPregunta([FromBody] Pregunta pregunta)
+        public async Task<ActionResult<Pregunta>> PostPregunta(Pregunta pregunta)
         {
             try
             {
-                // Asegurar que la lista de Opciones y Formularios puede ser nula
-                pregunta.Opciones ??= new List<OpcionRespuesta>();
-                pregunta.Formularios ??= new List<FormularioPregunta>();
-
                 _context.Preguntas.Add(pregunta);
                 await _context.SaveChangesAsync();
 
-                return CreatedAtAction(nameof(GetPregunta), new { id = pregunta.IdPregunta }, pregunta);
+                // Retornar solo los datos esenciales, sin relaciones innecesarias
+                var response = new
+                {
+                    idPregunta = pregunta.IdPregunta,
+                    tipoPregunta = pregunta.TipoPregunta,
+                    textoPregunta = pregunta.TextoPregunta
+                };
+
+                return CreatedAtAction(nameof(GetPregunta), new { id = pregunta.IdPregunta }, response);
             }
             catch (Exception ex)
             {
