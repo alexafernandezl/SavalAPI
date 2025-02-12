@@ -141,9 +141,9 @@ namespace SavalAPI.Data
                 .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<Encuestado>()
-        .HasKey(e => e.Identificacion); // PK de la tabla
+            .HasKey(e => e.Identificacion); // PK de la tabla
 
-            
+           
         }
 
     }

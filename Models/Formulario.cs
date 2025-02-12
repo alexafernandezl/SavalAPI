@@ -1,4 +1,6 @@
-﻿namespace SavalAPI.Models
+﻿using System.Text.Json.Serialization;
+
+namespace SavalAPI.Models
 {
     public class Formulario
     {
@@ -9,7 +11,7 @@
         public DateTime FechaFin { get; set; }
         public bool Habilitado { get; set; }
         public bool Anonimo { get; set; }
-
-        public ICollection<FormularioPregunta> Preguntas { get; set; }
+        [JsonIgnore]
+        public ICollection<FormularioPregunta>? Preguntas { get; set; }
     }
 }

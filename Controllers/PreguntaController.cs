@@ -61,18 +61,22 @@ namespace SavalAPI.Controllers
 
         // Crear una nueva pregunta
         [HttpPost]
-        public async Task<ActionResult<Pregunta>> PostPregunta([FromBody] Pregunta pregunta)
+        public async Task<ActionResult<Pregunta>> PostPregunta(Pregunta pregunta)
         {
             try
             {
-                // Asegurar que la lista de Opciones y Formularios puede ser nula
-                pregunta.Opciones ??= new List<OpcionRespuesta>();
-                pregunta.Formularios ??= new List<FormularioPregunta>();
-
                 _context.Preguntas.Add(pregunta);
                 await _context.SaveChangesAsync();
 
-                return CreatedAtAction(nameof(GetPregunta), new { id = pregunta.IdPregunta }, pregunta);
+                // Retornar solo los datos esenciales, sin relaciones innecesarias
+                var response = new
+                {
+                    idPregunta = pregunta.IdPregunta,
+                    tipoPregunta = pregunta.TipoPregunta,
+                    textoPregunta = pregunta.TextoPregunta
+                };
+
+                return CreatedAtAction(nameof(GetPregunta), new { id = pregunta.IdPregunta }, response);
             }
             catch (Exception ex)
             {
@@ -111,28 +115,63 @@ namespace SavalAPI.Controllers
             }
         }
 
-        // Eliminar una pregunta
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePregunta(int id)
+        // OBTENER TODAS LAS OPCIONES DE UNA PREGUNTA
+        [HttpGet("{id}/opciones")]
+        public async Task<ActionResult<IEnumerable<OpcionRespuesta>>> GetOpcionesByPregunta(int id)
         {
             try
             {
-                var pregunta = await _context.Preguntas.FindAsync(id);
+                // Verificar si la pregunta existe
+                var preguntaExistente = await _context.Preguntas.FindAsync(id);
+                if (preguntaExistente == null)
+                    return NotFound(new { message = "La pregunta especificada no existe." });
 
-                if (pregunta == null)
-                {
-                    return NotFound(new { message = "Pregunta no encontrada." });
-                }
+                // Obtener todas las opciones asociadas a la pregunta
+                var opciones = await _context.OpcionesRespuestas
+                    .Where(o => o.IdPregunta == id)
+                    .ToListAsync();
 
-                _context.Preguntas.Remove(pregunta);
-                await _context.SaveChangesAsync();
-
-                return Ok(new { message = "Pregunta eliminada con éxito." });
+                return Ok(opciones);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = $"Error interno del servidor: {ex.Message}" });
             }
         }
+
+
+        
+        // Eliminar una pregunta y sus opciones asociadas
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePregunta(int id)
+        {
+            try
+            {
+                // Buscar la pregunta en la base de datos
+                var pregunta = await _context.Preguntas
+                    .Include(p => p.Opciones) // Cargar las opciones asociadas
+                    .FirstOrDefaultAsync(p => p.IdPregunta == id);
+
+                if (pregunta == null)
+                {
+                    return NotFound(new { message = "Pregunta no encontrada." });
+                }
+
+                // Eliminar primero las opciones asociadas
+                _context.OpcionesRespuestas.RemoveRange(pregunta.Opciones);
+
+                // Luego eliminar la pregunta
+                _context.Preguntas.Remove(pregunta);
+
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Pregunta y sus opciones eliminadas con éxito." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Error interno del servidor: {ex.Message}" });
+            }
+        }
+
     }
 }

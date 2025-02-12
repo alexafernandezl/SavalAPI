@@ -1,5 +1,6 @@
 ﻿using SavalAPI.Models;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 public class Usuario
 {
@@ -15,6 +16,7 @@ public class Usuario
     [Required]
     public int IdRol { get; set; } // Llave foránea al rol
 
-    [Required]
-    public Rol Rol { get; set; } // Relación obligatoria con el rol
+    
+    [JsonIgnore]
+    public Rol? Rol { get; set; } // Relación obligatoria con el rol
 }

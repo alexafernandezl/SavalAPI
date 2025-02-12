@@ -54,6 +54,50 @@ namespace SavalAPI.Controllers
             }
         }
 
+
+
+        // Obtener todas las recomendaciones habilitadas
+        [HttpGet("habilitadas")]
+        public async Task<ActionResult<IEnumerable<Recomendacion>>> GetRecomendacionesHabilitadas()
+        {
+            try
+            {
+                var recomendaciones = await _context.Recomendaciones
+                    .Where(r => r.Habilitado) // 
+                    .ToListAsync();
+
+                return Ok(recomendaciones);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Error interno del servidor: {ex.Message}" });
+            }
+        }
+
+        // Obtener una recomendación por ID (solo si está habilitada)
+        [HttpGet("habilitada/{id}")]
+        public async Task<ActionResult<Recomendacion>> GetRecomendacionHabilitada(int id)
+        {
+            try
+            {
+                var recomendacion = await _context.Recomendaciones
+                    .Where(r => r.Habilitado) //
+                    .FirstOrDefaultAsync(r => r.IdRecomendacion == id);
+
+                if (recomendacion == null)
+                {
+                    return NotFound(new { message = "Recomendación no encontrada o está deshabilitada." });
+                }
+
+                return Ok(recomendacion);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Error interno del servidor: {ex.Message}" });
+            }
+        }
+
+
         // Crear una nueva recomendación
         [HttpPost]
         public async Task<ActionResult<Recomendacion>> PostRecomendacion(Recomendacion recomendacion)
@@ -110,14 +154,12 @@ namespace SavalAPI.Controllers
                 var recomendacion = await _context.Recomendaciones.FindAsync(id);
 
                 if (recomendacion == null)
-                {
                     return NotFound(new { message = "Recomendación no encontrada." });
-                }
 
-                _context.Recomendaciones.Remove(recomendacion);
+                recomendacion.Habilitado = false; //Soft Delete (no se elimina, solo se oculta)
                 await _context.SaveChangesAsync();
 
-                return Ok(new { message = "Recomendación eliminada con éxito." });
+                return Ok(new { message = "Recomendación deshabilitada con éxito." });
             }
             catch (Exception ex)
             {

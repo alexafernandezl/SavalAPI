@@ -57,11 +57,11 @@ namespace SavalAPI.Controllers
         {
             try
             {
-                // Validar que el IdRol proporcionado existe en la base de datos
+                // Validar si el rol existe en la base de datos
                 var existingRol = await _context.Roles.FindAsync(usuario.IdRol);
                 if (existingRol == null)
                 {
-                    return BadRequest("El rol especificado no existe en la base de datos.");
+                    return BadRequest(new { message = "El rol especificado no existe en la base de datos." });
                 }
 
                 // Asignar el objeto Rol existente basado en el IdRol
@@ -75,7 +75,7 @@ namespace SavalAPI.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+                return StatusCode(500, new { message = $"Error interno del servidor: {ex.Message}" });
             }
         }
 
