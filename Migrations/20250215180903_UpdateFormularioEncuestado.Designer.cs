@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SavalAPI.Data;
 
@@ -11,9 +12,11 @@ using SavalAPI.Data;
 namespace SavalAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250215180903_UpdateFormularioEncuestado")]
+    partial class UpdateFormularioEncuestado
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,7 +54,7 @@ namespace SavalAPI.Migrations
 
                     b.HasKey("Identificacion");
 
-                    b.ToTable("Encuestados", (string)null);
+                    b.ToTable("Encuestados");
                 });
 
             modelBuilder.Entity("FormularioEncuestado", b =>
@@ -86,7 +89,7 @@ namespace SavalAPI.Migrations
 
                     b.HasIndex("IdEncuestado");
 
-                    b.ToTable("FormularioEncuestados", (string)null);
+                    b.ToTable("FormularioEncuestados");
                 });
 
             modelBuilder.Entity("ReglaOpcion", b =>
@@ -118,7 +121,7 @@ namespace SavalAPI.Migrations
 
                     b.HasIndex("IdRecomendacion");
 
-                    b.ToTable("ReglasOpciones", (string)null);
+                    b.ToTable("ReglasOpciones");
                 });
 
             modelBuilder.Entity("SavalAPI.Models.DetalleRespuesta", b =>
@@ -146,7 +149,7 @@ namespace SavalAPI.Migrations
 
                     b.HasIndex("IdRespuesta");
 
-                    b.ToTable("DetallesRespuestas", (string)null);
+                    b.ToTable("DetallesRespuestas");
                 });
 
             modelBuilder.Entity("SavalAPI.Models.FactorRiesgo", b =>
@@ -166,7 +169,7 @@ namespace SavalAPI.Migrations
 
                     b.HasKey("IdFactor");
 
-                    b.ToTable("FactoresRiesgo", (string)null);
+                    b.ToTable("FactoresRiesgo");
                 });
 
             modelBuilder.Entity("SavalAPI.Models.Formulario", b =>
@@ -198,7 +201,7 @@ namespace SavalAPI.Migrations
 
                     b.HasKey("IdFormulario");
 
-                    b.ToTable("Formularios", (string)null);
+                    b.ToTable("Formularios");
                 });
 
             modelBuilder.Entity("SavalAPI.Models.FormularioPregunta", b =>
@@ -221,7 +224,7 @@ namespace SavalAPI.Migrations
 
                     b.HasIndex("IdPregunta");
 
-                    b.ToTable("FormulariosPreguntas", (string)null);
+                    b.ToTable("FormulariosPreguntas");
                 });
 
             modelBuilder.Entity("SavalAPI.Models.OpcionRespuesta", b =>
@@ -243,7 +246,7 @@ namespace SavalAPI.Migrations
 
                     b.HasIndex("IdPregunta");
 
-                    b.ToTable("OpcionesRespuestas", (string)null);
+                    b.ToTable("OpcionesRespuestas");
                 });
 
             modelBuilder.Entity("SavalAPI.Models.Pregunta", b =>
@@ -266,7 +269,7 @@ namespace SavalAPI.Migrations
 
                     b.HasKey("IdPregunta");
 
-                    b.ToTable("Preguntas", (string)null);
+                    b.ToTable("Preguntas");
                 });
 
             modelBuilder.Entity("SavalAPI.Models.Recomendacion", b =>
@@ -286,7 +289,7 @@ namespace SavalAPI.Migrations
 
                     b.HasKey("IdRecomendacion");
 
-                    b.ToTable("Recomendaciones", (string)null);
+                    b.ToTable("Recomendaciones");
                 });
 
             modelBuilder.Entity("SavalAPI.Models.Respuesta", b =>
@@ -312,7 +315,7 @@ namespace SavalAPI.Migrations
 
                     b.HasIndex("IdentificacionEncuestado");
 
-                    b.ToTable("Respuestas", (string)null);
+                    b.ToTable("Respuestas");
                 });
 
             modelBuilder.Entity("SavalAPI.Models.Rol", b =>
@@ -329,7 +332,7 @@ namespace SavalAPI.Migrations
 
                     b.HasKey("IdRol");
 
-                    b.ToTable("Roles", (string)null);
+                    b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("Usuario", b =>
@@ -355,7 +358,7 @@ namespace SavalAPI.Migrations
 
                     b.HasIndex("IdRol");
 
-                    b.ToTable("Usuarios", (string)null);
+                    b.ToTable("Usuarios");
                 });
 
             modelBuilder.Entity("FormularioEncuestado", b =>

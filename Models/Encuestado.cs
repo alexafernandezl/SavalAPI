@@ -1,16 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 public class Encuestado
 {
     [Key]
     [Required]
     [MaxLength(50)]
-    public string Identificacion { get; set; }
+    public string Identificacion { get; set; } // PK
 
     [Required]
     [MaxLength(50)]
-    public string TipoIdentificacion { get; set; }
+    public string TipoIdentificacion { get; set; } // Cédula, Pasaporte
 
     [Required]
     [MaxLength(255)]
@@ -20,21 +23,13 @@ public class Encuestado
     public DateTime FechaNacimiento { get; set; }
 
     [Required]
-    [Column(TypeName = "decimal(5,2)")]
-    public decimal Altura { get; set; } // En metros
-
-    [Required]
-    [Column(TypeName = "decimal(5,2)")]
-    public decimal Peso { get; set; } // En kilogramos
-
-    [Required] //  
-    [Column(TypeName = "decimal(5,2)")]
-    public decimal IMC { get; set; } // Índice de Masa Corporal
-
-    [Required]
     [MaxLength(50)]
-    public string Sexo { get; set; }
+    public string Sexo { get; set; } // Masculino, Femenino, Otro
 
-    [MaxLength(255)]
-    public string? Ubicacion { get; set; }
+    public bool Habilitado { get; set; } = true; // Activo por defecto
+
+    // Relación con FormularioEncuestado (Muchos a Muchos)dotnet ef migrations add RemoveIMCFromEncuestados
+
+    [JsonIgnore]
+    public ICollection<FormularioEncuestado>? FormulariosEncuestados { get; set; }
 }
