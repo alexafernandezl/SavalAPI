@@ -19,7 +19,7 @@ namespace SavalAPI.Models
         public Formulario? Formulario { get; set; }
 
         // Relación con Encuestado (opcional, puede ser NULL)
-        [JsonIgnore]
+       
         public string? IdentificacionEncuestado { get; set; } // Clave foránea opcional
         [ForeignKey("IdentificacionEncuestado")]
 

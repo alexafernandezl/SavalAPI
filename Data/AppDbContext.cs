@@ -25,6 +25,8 @@ namespace SavalAPI.Data
         public DbSet<FactorRiesgo> FactoresRiesgo { get; set; }
         public DbSet<ReglaOpcion> ReglasOpciones { get; set; }
 
+        public DbSet<FormularioEncuestado> FormularioEncuestados { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -143,7 +145,25 @@ namespace SavalAPI.Data
             modelBuilder.Entity<Encuestado>()
             .HasKey(e => e.Identificacion); // PK de la tabla
 
-           
+            modelBuilder.Entity<FormularioEncuestado>()
+            .HasKey(fe => new { fe.IdFormulario, fe.IdEncuestado, fe.Fecha }); // Clave compuesta
+
+            // Relación con Encuestado
+            modelBuilder.Entity<FormularioEncuestado>()
+                .HasOne(fe => fe.Encuestado)
+                .WithMany(e => e.FormulariosEncuestados)
+                .HasForeignKey(fe => fe.IdEncuestado)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Relación con Formulario
+            modelBuilder.Entity<FormularioEncuestado>()
+                .HasOne(fe => fe.Formulario)
+                .WithMany()
+                .HasForeignKey(fe => fe.IdFormulario)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
+
         }
 
     }
