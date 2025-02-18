@@ -19,6 +19,22 @@ namespace SavalAPI.Controllers
             _context = context;
         }
 
+        // ✅ Obtener TODOS 
+        [HttpGet("todos")]
+        public async Task<ActionResult<IEnumerable<Encuestado>>> GetTodosEncuestados()
+        {
+            try
+            {
+                var encuestados = await _context.FormulariosPreguntas.ToListAsync();
+                return Ok(encuestados);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Error interno del servidor: {ex.Message}" });
+            }
+        }
+
+
         // Obtener todas las preguntas de un formulario
         [HttpGet("formulario/{idFormulario}")]
         public async Task<ActionResult<IEnumerable<Pregunta>>> GetPreguntasPorFormulario(int idFormulario)
